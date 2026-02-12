@@ -89,7 +89,7 @@ Assisting Auditors:
   * [[G-3] Use Custom Errors Instead of Revert Strings for Cheaper and More Structured Reverts](#g-3-use-custom-errors-instead-of-revert-strings-for-cheaper-and-more-structured-reverts)
   * [[G-4] Repeated `10 ** IERC20(...).decimals()` Calls Increase Gas Usage](#g-4-repeated-10--ierc20decimals-calls-increase-gas-usage)
   * [[G-5] Recomputing `returnAmount - totalDebt` Wastes Gas](#g-5-recomputing-returnamount---totaldebt-wastes-gas)
-  * [[Gas-6] Use Custom Errors Instead of Require Strings (String Revert Cost + Gas Impact)](#gas-6-use-custom-errors-instead-of-require-strings-string-revert-cost--gas-impact)
+  * [[G-6] Use Custom Errors Instead of Require Strings (String Revert Cost + Gas Impact)](#g-6-use-custom-errors-instead-of-require-strings-string-revert-cost--gas-impact)
 
 </details>
 
@@ -2364,7 +2364,7 @@ Minor gas inefficiency and reduced readability.
 
 ---
 
-### [Gas-6] Use Custom Errors Instead of Require Strings (String Revert Cost + Gas Impact)
+### [G-6] Use Custom Errors Instead of Require Strings (String Revert Cost + Gas Impact)
 
 **Description:**
 
