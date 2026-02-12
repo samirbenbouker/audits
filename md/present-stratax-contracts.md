@@ -14,23 +14,85 @@ Assisting Auditors:
 
 <summary>See table</summary>
 
-- [PasswordStore Audit Report](#passwordstore-audit-report)
-- [Table of contents](#table-of-contents)
-- [Disclaimer](#disclaimer)
-- [Risk Classification](#risk-classification)
-- [Audit Details](#audit-details)
-  - [Scope](#scope)
-- [Protocol Summary](#protocol-summary)
-  - [Roles](#roles)
-- [Executive Summary](#executive-summary)
-  - [Issues found](#issues-found)
-- [Findings](#findings)
-  - [High](#high)
-    - [\[H-1\] Passwords stored on-chain are visable to anyone, not matter solidity variable visibility](#h-1-passwords-stored-on-chain-are-visable-to-anyone-not-matter-solidity-variable-visibility)
-  - [Medium](#medium)
-  - [Low](#low)
-  
+* [PasswordStore Audit Report](#passwordstore-audit-report)
+* [Table of contents](#table-of-contents)
+* [Disclaimer](#disclaimer)
+* [Risk Classification](#risk-classification)
+* [Audit Details](#audit-details)
+
+  * [Scope](#scope)
+* [Protocol Summary](#protocol-summary)
+
+  * [Roles](#roles)
+* [Executive Summary](#executive-summary)
+
+  * [Issues found](#issues-found)
+* [Findings](#findings)
+
+  * [High](#high)
+
+    * [[H-1] Untrusted Pool Configuration Enables Full Fund Drain](#h-1-untrusted-pool-configuration-enables-full-fund-drain)
+    * [[H-2] Tether (USDT) Non-Standard ERC20 Behavior Can Cause Flash Loan Reverts and Protocol Denial of Service](#h-2-tether-usdt-non-standard-erc20-behavior-can-cause-flash-loan-reverts-and-protocol-denial-of-service-1)
+  * [Medium](#medium)
+
+    * [[M-1] Missing Zero-Address Validation in Initializer Can Lead to Irrecoverable Misconfiguration](#m-1-missing-zero-address-validation-in-initializer-can-lead-to-irrecoverable-misconfiguration)
+    * [[M-2] ERC20 `transfer` Return Value Is Not Checked in `Stratax::recoverTokens`](#m-2-erc20-transfer-return-value-is-not-checked-in-strataxrecovertokens)
+    * [[M-3] Use `SafeERC20` in `Stratax::recoverTokens` for Token Recovery to Support Non-Standard ERC20s](#m-3-use-safeerc20-in-strataxrecovertokens-for-token-recovery-to-support-non-standard-erc20s)
+    * [[M-4] `transferFrom` Return Value Not Checked When Pulling Collateral](#m-4-transferfrom-return-value-not-checked-when-pulling-collateral)
+    * [[M-5] Use `SafeERC20.safeTransferFrom` When Pulling Collateral to Support Non-Standard ERC20s](#m-5-use-safeerc20safetransferfrom-when-pulling-collateral-to-support-non-standard-erc20s)
+    * [[M-6] Integer Division Truncation in Param Calculations Causes Systematic Under/Over-Estimation (Precision Loss → Unsafe/Failed Positions)](#m-6-integer-division-truncation-in-param-calculations-causes-systematic-underover-estimation-precision-loss--unsafefailed-positions)
+    * [[M-7] Precision Loss From Integer Division in `Stratax::calculateUnwindParams` May Under/Overestimate Collateral Withdrawal](#m-7-precision-loss-from-integer-division-in-strataxcalculateunwindparams-may-underoverestimate-collateral-withdrawal)
+    * [[M-8] Unchecked `approve` for Aave `supply` May Fail Silently](#m-8-unchecked-approve-for-aave-supply-may-fail-silently)
+    * [[M-9] Use `SafeERC20` for `approve` to Handle Non-Standard Tokens](#m-9-use-safeerc20-for-approve-to-handle-non-standard-tokens)
+    * [[M-10] Unchecked `approve` for 1inch Router May Fail Silently](#m-10-unchecked-approve-for-1inch-router-may-fail-silently)
+    * [[M-11] Use `SafeERC20` for 1inch Router Approval](#m-11-use-safeerc20-for-1inch-router-approval)
+    * [[M-12] Unchecked `approve` for Supplying Leftover Collateral May Fail Silently](#m-12-unchecked-approve-for-supplying-leftover-collateral-may-fail-silently)
+    * [[M-13] Use `SafeERC20` for Leftover Collateral Approval](#m-13-use-safeerc20-for-leftover-collateral-approval)
+    * [[M-14] Unchecked `approve` for Flash Loan Repayment Allowance May Fail Silently](#m-14-unchecked-approve-for-flash-loan-repayment-allowance-may-fail-silently)
+    * [[M-15] Use `SafeERC20` for Flash Loan Repayment Approval](#m-15-use-safeerc20-for-flash-loan-repayment-approval)
+    * [[M-16] Unchecked `approve` Return Value Before Aave `repay` May Cause Unexpected Failures](#m-16-unchecked-approve-return-value-before-aave-repay-may-cause-unexpected-failures)
+    * [[M-17] Use `SafeERC20` for `approve` (Aave Repay) to Support Non-Standard Tokens](#m-17-use-safeerc20-for-approve-aave-repay-to-support-non-standard-tokens)
+    * [[M-18] Return Value of `aavePool.repay` Ignored, Potentially Miscomputing Withdrawn Collateral](#m-18-return-value-of-aavepoolrepay-ignored-potentially-miscomputing-withdrawn-collateral)
+    * [[M-19] Precision Loss Risk Due to Integer Division in `collateralToWithdraw`](#m-19-precision-loss-risk-due-to-integer-division-in-collateraltowithdraw)
+    * [[M-20] Unchecked `approve` Return Value Before 1inch Swap](#m-20-unchecked-approve-return-value-before-1inch-swap)
+    * [[M-21] Use `SafeERC20` for 1inch Router Approval](#m-21-use-safeerc20-for-1inch-router-approval)
+    * [[M-22] Unchecked `approve` Before Supplying Leftover Tokens to Aave](#m-22-unchecked-approve-before-supplying-leftover-tokens-to-aave)
+    * [[M-23] Use `SafeERC20` for Leftover Supply Approval](#m-23-use-safeerc20-for-leftover-supply-approval)
+    * [[M-24] Unchecked `approve` for Final Flash Loan Repayment Allowance](#m-24-unchecked-approve-for-final-flash-loan-repayment-allowance)
+    * [[M-25] Use `SafeERC20` for Final Flash Loan Repayment Approval](#m-25-use-safeerc20-for-final-flash-loan-repayment-approval)
+    * [[M-26] Atomic Loop Reverts on Single Bad Entry (Single Failure Blocks Batch Update + DoS-on-Batch Risk)](#m-26-atomic-loop-reverts-on-single-bad-entry-single-failure-blocks-batch-update--dos-on-batch-risk)
+    * [[M-27] Oracle Manipulation / Unsafe Oracle Read (Single `latestRoundData` Read + Price Integrity Risk)](#m-27-oracle-manipulation--unsafe-oracle-read-single-latestrounddata-read--price-integrity-risk)
+  * [Low](#low)
+
+    * [[L-1] Floating Pragma May Lead to Inconsistent Compilation both contracts (Stratax and StrataxOracle)](#l-1-floating-pragma-may-lead-to-inconsistent-compilation-both-contracts-stratax-and-strataxoracle)
+    * [[L-2] Unused Interface Leads to ABI Drift Risk](#l-2-unused-interface-leads-to-abi-drift-risk)
+    * [[L-3] Missing Event Emission on Oracle Update Reduces Off-Chain Observability](#l-3-missing-event-emission-on-oracle-update-reduces-off-chain-observability)
+    * [[L-4] Missing Event Emission on Flash Loan Fee Update Reduces Transparency](#l-4-missing-event-emission-on-flash-loan-fee-update-reduces-transparency)
+    * [[L-5] Missing Input Validation in `Stratax::recoverTokens` Allows Invalid Parameters](#l-5-missing-input-validation-in-strataxrecovertokens-allows-invalid-parameters)
+    * [[L-6] Missing Event Emission on Ownership Transfer Reduces Administrative Traceability](#l-6-missing-event-emission-on-ownership-transfer-reduces-administrative-traceability)
+    * [[L-7] Missing Zero-Address Validation in `Stratax::calculateUnwindParams` Can Cause Misconfiguration Reverts](#l-7-missing-zero-address-validation-in-strataxcalculateunwindparams-can-cause-misconfiguration-reverts)
+    * [[L-8] Magic Number `2` Used for Interest Rate Mode Reduces Clarity](#l-8-magic-number-2-used-for-interest-rate-mode-reduces-clarity)
+    * [[L-9] Magic Number `1e18` for Health Factor Threshold Should Be a Named Constant](#l-9-magic-number-1e18-for-health-factor-threshold-should-be-a-named-constant)
+    * [[L-10] Magic Number `2` Used as Interest Rate Mode Reduces Readability](#l-10-magic-number-2-used-as-interest-rate-mode-reduces-readability)
+    * [[L-11] Unused Interface Declaration (Dead Code + Maintainability Impact)](#l-11-unused-interface-declaration-dead-code--maintainability-impact)
+    * [[L-12] Missing Storage Variable Documentation (Lack of Comments + Readability Impact)](#l-12-missing-storage-variable-documentation-lack-of-comments--readability-impact)
+    * [[L-13] Inconsistent Storage Naming Convention (Unclear State Variables + Maintainability Impact)](#l-13-inconsistent-storage-naming-convention-unclear-state-variables--maintainability-impact)
+    * [[L-14] Missing Empty Array Validation (Invalid Input Not Rejected + UX/Consistency Impact)](#l-14-missing-empty-array-validation-invalid-input-not-rejected--uxconsistency-impact)
+    * [[L-15] Magic Number for Decimals Check (Hardcoded Constant + Maintainability Impact)](#l-15-magic-number-for-decimals-check-hardcoded-constant--maintainability-impact)
+    * [[L-16] Missing Zero-Address Validation for `_token` (Invalid Input + Readability/Correctness Impact)](#l-16-missing-zero-address-validation-for-_token-invalid-input--readabilitycorrectness-impact)
+    * [[L-17] Missing Zero-Address Validation in `StrataxOracle::getPriceDecimals` (Invalid Input + API Correctness Impact)](#l-17-missing-zero-address-validation-in-strataxoraclegetpricedecimals-invalid-input--api-correctness-impact)
+    * [[L-18] Missing Zero-Address Validation in `StrataxOracle::getRoundData` (Invalid Input + Defensive Programming Gap)](#l-18-missing-zero-address-validation-in-strataxoraclegetrounddata-invalid-input--defensive-programming-gap)
+* [Gas Optimizations](#gas-optimizations)
+
+  * [[G-1] Missing Storage Naming Convention Reduces Codebase Readability](#g-1-missing-storage-naming-convention-reduces-codebase-readability)
+  * [[G-2] Use of Magic Number for Flash Loan Fee Reduces Configurability and Clarity](#g-2-use-of-magic-number-for-flash-loan-fee-reduces-configurability-and-clarity)
+  * [[G-3] Use Custom Errors Instead of Revert Strings for Cheaper and More Structured Reverts](#g-3-use-custom-errors-instead-of-revert-strings-for-cheaper-and-more-structured-reverts)
+  * [[G-4] Repeated `10 ** IERC20(...).decimals()` Calls Increase Gas Usage](#g-4-repeated-10--ierc20decimals-calls-increase-gas-usage)
+  * [[G-5] Recomputing `returnAmount - totalDebt` Wastes Gas](#g-5-recomputing-returnamount---totaldebt-wastes-gas)
+  * [[Gas-6] Use Custom Errors Instead of Require Strings (String Revert Cost + Gas Impact)](#gas-6-use-custom-errors-instead-of-require-strings-string-revert-cost--gas-impact)
+
 </details>
+
 </br>
 
 # Disclaimer
@@ -74,12 +136,12 @@ Stratax is a DeFi leveraged position protocol that enables users to create lever
 
 | Severity          | Number of issues found |
 | ----------------- | ---------------------- |
-| High              | 1                      |
-| Medium            | 25                     |
-| Low               | 10                     |
+| High              | 2                      |
+| Medium            | 27                     |
+| Low               | 18                     |
 | Info              | 0                      |
-| Gas Optimizations | 5                      |
-| Total             | 41                     |
+| Gas Optimizations | 6                      |
+| Total             | 53                     |
 
 # Findings
 
@@ -308,7 +370,7 @@ require(trustedPool[_aavePool], "Pool not approved");
 
 ---
 
-## ### [H-1] Tether (USDT) Non-Standard ERC20 Behavior Can Cause Flash Loan Reverts and Protocol Denial of Service
+### [H-2] Tether (USDT) Non-Standard ERC20 Behavior Can Cause Flash Loan Reverts and Protocol Denial of Service
 
 **Description:**
 
